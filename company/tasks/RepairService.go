@@ -1,7 +1,5 @@
 package tasks
 
-import "fmt"
-
 type RepairService struct {
 	BrokenMachines    []*Machine
 	RepairingMachines []*Machine
@@ -19,14 +17,12 @@ func RunRepairService(service *RepairService, brokenMachines <-chan *Machine, re
 			for _, broken := range service.BrokenMachines {
 				if brokenMachine.Name == broken.Name {
 					alreadyRequested = true
-					fmt.Println("Already requested!")
 					break
 				}
 			}
 			for _, broken := range service.RepairingMachines {
 				if brokenMachine.Name == broken.Name {
 					alreadyRequested = true
-					fmt.Println("Already being repaired")
 					break
 				}
 			}
@@ -45,7 +41,6 @@ func RunRepairService(service *RepairService, brokenMachines <-chan *Machine, re
 					break
 				}
 			}
-			fmt.Println("Repaired confirm")
 		}
 	}
 }
@@ -57,7 +52,7 @@ func repairGuard(condition bool, channel chan RepairRequest) chan RepairRequest 
 	return nil
 }
 
-func CreateRepairService(brokenMachines <-chan *Machine, repairRequests chan RepairRequest) {
+func CreateRepairService(brokenMachines <-chan *Machine, repairRequests chan RepairRequest, machineRepaired <-chan *Machine) {
 	service := RepairService{make([]*Machine, 0), make([]*Machine, 0)}
-	RunRepairService(&service, brokenMachines, repairRequests)
+	RunRepairService(&service, brokenMachines, repairRequests, machineRepaired)
 }

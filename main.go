@@ -19,11 +19,12 @@ func main() {
 	addProduct, sellProduct, getProducts := createShop()
 	addTask, getTask, getTasks := createStorage()
 	brokenMachines := make(chan *Machine)
+	machineRepaired := make(chan *Machine)
 	repairRequests := make(chan RepairRequest)
-	createRepairWorkers(repairRequests)
+	createRepairWorkers(repairRequests, machineRepaired)
 
 	createBoss(addTask)
-	go CreateRepairService(brokenMachines, repairRequests)
+	go CreateRepairService(brokenMachines, repairRequests, machineRepaired)
 
 	var addingMachines = createMachines("Adder_", NumberOfAdders, AdderWorkingTime)
 	var multiplyingMachines = createMachines("Multiplier_", NumberOfMultipliers, MultiplierWorkingTime)
@@ -37,9 +38,9 @@ func main() {
 	}
 }
 
-func createRepairWorkers(repairRequests chan RepairRequest) {
+func createRepairWorkers(repairRequests chan RepairRequest, machineRepaired chan *Machine) {
 	for i := 0; i < NumberOfRepairWorkers; i++ {
-		worker := CreateRepairWorker("mechanic_"+strconv.Itoa(i), repairRequests, RepairTime, Loud)
+		worker := CreateRepairWorker("mechanic_"+strconv.Itoa(i), repairRequests, RepairTime, Loud, machineRepaired)
 		go StartRepairWorker(worker)
 	}
 }

@@ -4,7 +4,7 @@ import "time"
 
 const (
 	//General
-	Loud = true
+	Loud = false
 
 	//Customer
 	NumberOfCustomers int = 1
